@@ -23,7 +23,14 @@ pub const NAMESPACE: &str = "http://www.w3.org/2005/Atom";
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Default, Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct AtomExtension {
     /// Links
     pub links: Vec<Link>,
@@ -100,5 +107,13 @@ impl ToXml for AtomExtension {
             writer.write_event(Event::Empty(element))?;
         }
         Ok(())
+    }
+}
+
+#[cfg(feature = "builders")]
+impl AtomExtensionBuilder {
+    /// Builds a new `AtomExtension`.
+    pub fn build(&self) -> AtomExtension {
+        self.build_impl().unwrap()
     }
 }

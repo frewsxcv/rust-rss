@@ -66,7 +66,14 @@ impl fmt::Display for UpdatePeriod {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct SyndicationExtension {
     /// The refresh period for this channel
     pub period: UpdatePeriod,
@@ -168,5 +175,13 @@ impl SyndicationExtension {
         with_first_ext_value(&map, "updateBase", |value| syn.base = value.to_owned());
 
         syn
+    }
+}
+
+#[cfg(feature = "builders")]
+impl SyndicationExtensionBuilder {
+    /// Builds a new `SyndicationExtension`.
+    pub fn build(&self) -> SyndicationExtension {
+        self.build_impl().unwrap()
     }
 }

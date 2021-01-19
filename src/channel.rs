@@ -35,7 +35,14 @@ use crate::util::element_text;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct Channel {
     /// The name of the channel.
     pub title: String,
@@ -1454,5 +1461,13 @@ impl FromStr for Channel {
     #[inline]
     fn from_str(s: &str) -> Result<Channel, Error> {
         Channel::read_from(s.as_bytes())
+    }
+}
+
+#[cfg(feature = "builders")]
+impl ChannelBuilder {
+    /// Builds a new `Channel`.
+    pub fn build(&self) -> Channel {
+        self.build_impl().unwrap()
     }
 }

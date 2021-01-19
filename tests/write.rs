@@ -124,8 +124,7 @@ fn verify_write_format() {
     let item = ItemBuilder::default()
         .itunes_ext(extension::itunes::ITunesItemExtension::default())
         .dublin_core_ext(extension::dublincore::DublinCoreExtension::default())
-        .build()
-        .unwrap();
+        .build();
 
     let mut namespaces: HashMap<String, String> = HashMap::new();
     namespaces.insert("ext".to_string(), "http://example.com/".to_string());
@@ -136,8 +135,7 @@ fn verify_write_format() {
         .description("Description")
         .items(vec![item])
         .namespaces(namespaces)
-        .build()
-        .unwrap();
+        .build();
 
     let output = include_str!("data/verify_write_format.xml")
         .replace("\n", "")
@@ -152,10 +150,8 @@ fn test_content_namespace() {
     let channel = ChannelBuilder::default()
         .items(vec![ItemBuilder::default()
             .content("Lorem ipsum dolor sit amet".to_owned())
-            .build()
-            .unwrap()])
-        .build()
-        .unwrap();
+            .build()])
+        .build();
     let xml = channel.to_string();
 
     assert!(xml.contains("xmlns:content="));
@@ -171,19 +167,15 @@ fn test_namespaces() {
             .itunes_ext(
                 extension::itunes::ITunesItemExtensionBuilder::default()
                     .author("Anonymous".to_owned())
-                    .build()
-                    .unwrap(),
+                    .build(),
             )
             .dublin_core_ext(
                 extension::dublincore::DublinCoreExtensionBuilder::default()
                     .languages(vec!["English".to_owned(), "Deutsch".to_owned()])
-                    .build()
-                    .unwrap(),
+                    .build(),
             )
-            .build()
-            .unwrap()])
-        .build()
-        .unwrap();
+            .build()])
+        .build();
     let xml = channel.to_string();
 
     assert!(xml.contains("xmlns:content="));
@@ -194,10 +186,7 @@ fn test_namespaces() {
 #[test]
 fn test_escape() {
     let mut channel = ChannelBuilder::default()
-        .categories(vec![CategoryBuilder::default()
-            .name("this & that")
-            .build()
-            .unwrap()])
+        .categories(vec![CategoryBuilder::default().name("this & that").build()])
         .cloud(
             CloudBuilder::default()
                 .domain("example.com")
@@ -205,28 +194,23 @@ fn test_escape() {
                 .path("/rpc?r=1&p=2&c=3")
                 .register_procedure("notify")
                 .protocol("xml-rpc")
-                .build()
-                .unwrap(),
+                .build(),
         )
         .items(vec![ItemBuilder::default()
             .content("Lorem ipsum dolor sit amet".to_owned())
             .enclosure(
                 EnclosureBuilder::default()
                     .url("http://example.com?test=1&another=true")
-                    .build()
-                    .unwrap(),
+                    .build(),
             )
             .source(
                 SourceBuilder::default()
                     .url("http://example.com?test=2&another=false")
                     .title("<title>".to_owned())
-                    .build()
-                    .unwrap(),
+                    .build(),
             )
-            .build()
-            .unwrap()])
-        .build()
-        .unwrap();
+            .build()])
+        .build();
 
     let mut attrs = HashMap::new();
     attrs.insert("ext:key1".to_owned(), "value 1&2".to_owned());
@@ -238,8 +222,7 @@ fn test_escape() {
         vec![extension::ExtensionBuilder::default()
             .name("ext:tag")
             .attrs(attrs)
-            .build()
-            .unwrap()],
+            .build()],
     );
 
     channel.extensions.insert("ext".to_owned(), extension_tag);

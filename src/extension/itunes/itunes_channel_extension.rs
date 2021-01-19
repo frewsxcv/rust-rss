@@ -22,7 +22,14 @@ use crate::toxml::{ToXml, WriterExt};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct ITunesChannelExtension {
     /// The author of the podcast.
     pub author: Option<String>,
@@ -544,5 +551,13 @@ impl ToXml for ITunesChannelExtension {
         }
 
         Ok(())
+    }
+}
+
+#[cfg(feature = "builders")]
+impl ITunesChannelExtensionBuilder {
+    /// Builds a new `ITunesChannelExtension`.
+    pub fn build(&self) -> ITunesChannelExtension {
+        self.build_impl().unwrap()
     }
 }

@@ -23,7 +23,14 @@ pub const NAMESPACE: &str = "http://purl.org/dc/elements/1.1/";
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct DublinCoreExtension {
     /// An entity responsible for making contributions to the resource.
     pub contributors: Vec<String>,
@@ -387,5 +394,13 @@ impl ToXml for DublinCoreExtension {
         let mut namespaces = HashMap::new();
         namespaces.insert("dc".to_owned(), NAMESPACE.to_owned());
         namespaces
+    }
+}
+
+#[cfg(feature = "builders")]
+impl DublinCoreExtensionBuilder {
+    /// Builds a new `DublinCoreExtension`.
+    pub fn build(&self) -> DublinCoreExtension {
+        self.build_impl().unwrap()
     }
 }

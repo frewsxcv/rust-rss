@@ -17,7 +17,14 @@ use crate::toxml::{ToXml, WriterExt};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct ITunesOwner {
     /// The name of the owner.
     pub name: Option<String>,
@@ -107,5 +114,13 @@ impl ToXml for ITunesOwner {
 
         writer.write_event(Event::End(BytesEnd::borrowed(name)))?;
         Ok(())
+    }
+}
+
+#[cfg(feature = "builders")]
+impl ITunesOwnerBuilder {
+    /// Builds a new `ITunesOwner`.
+    pub fn build(&self) -> ITunesOwner {
+        self.build_impl().unwrap()
     }
 }

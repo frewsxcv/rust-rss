@@ -38,7 +38,14 @@ pub type ExtensionMap = HashMap<String, HashMap<String, Vec<Extension>>>;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Default, Clone, PartialEq)]
 #[cfg_attr(feature = "builders", derive(Builder))]
-#[cfg_attr(feature = "builders", builder(setter(into), default))]
+#[cfg_attr(
+    feature = "builders",
+    builder(
+        setter(into),
+        default,
+        build_fn(name = "build_impl", private, error = "never::Never")
+    )
+)]
 pub struct Extension {
     /// The qualified name of the extension element.
     pub name: String,
@@ -108,5 +115,13 @@ impl ToXml for Extension {
 
         writer.write_event(Event::End(BytesEnd::borrowed(name)))?;
         Ok(())
+    }
+}
+
+#[cfg(feature = "builders")]
+impl ExtensionBuilder {
+    /// Builds a new `Extension`.
+    pub fn build(&self) -> Extension {
+        self.build_impl().unwrap()
     }
 }
